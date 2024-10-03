@@ -1,4 +1,5 @@
 from django.urls import path
+
 from cinema.views import movies_list_create, movies_detail
 
 
