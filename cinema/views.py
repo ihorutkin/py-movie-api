@@ -8,17 +8,17 @@ from rest_framework import status
 
 
 @api_view(["GET", "POST"])
-def movies_list(request):
+def movies_list_create(request):
     if request.method == "GET":
         movies = Movie.objects.all()
         serializer = MovieSerializer(movies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    else:
-        serializer = MovieSerializer(data=request.data)
-        if serializer.is_valid():
-            if serializer.save():
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = MovieSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        if serializer.save():
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET", "PUT", "DELETE"])
 def movies_detail(request, pk):
@@ -26,12 +26,12 @@ def movies_detail(request, pk):
     if request.method == "GET":
         serializer = MovieSerializer(movie)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    if request.method == "PUT":
+    elif request.method == "PUT":
         serializer = MovieSerializer(movie)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    if request.method == "DELETE":
+    else:
         movie.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
